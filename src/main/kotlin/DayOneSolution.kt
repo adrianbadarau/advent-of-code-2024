@@ -4,7 +4,7 @@ import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
 
-fun solution(){
+fun day1Solution(){
     val filePath = "input.txt"
     val (firstList, secondList) = readDataFromResources(filePath)
     println("First column: $firstList")
@@ -13,6 +13,10 @@ fun solution(){
     // Calculate the total distance between the paired numbers
     val totalDistance = calculateTotalDistance(firstList, secondList)
     println("Total Distance: $totalDistance")
+
+    // Calculate the total similarity score
+    val totalSimilarityScore = calculateTotalSimilarityScore(firstList, secondList)
+    println("Total Similarity Score: $totalSimilarityScore")
 }
 
 
@@ -59,4 +63,19 @@ fun readDataFromResources(fileName: String): Pair<List<Int>, List<Int>> {
     }
 
     return firstColumn.toList() to secondColumn.toList()
+}
+
+fun calculateTotalSimilarityScore(firstList: List<Int>, secondList: List<Int>): Int {
+    // Count occurrences of each number in the right list
+    val countMap = secondList.groupingBy { it }.eachCount()
+
+    var totalSimilarityScore = 0
+
+    // Calculate the similarity score
+    for (number in firstList) {
+        val countInRightList = countMap[number] ?: 0
+        totalSimilarityScore += number * countInRightList
+    }
+
+    return totalSimilarityScore
 }
