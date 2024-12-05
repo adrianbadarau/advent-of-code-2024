@@ -8,30 +8,21 @@ class Day4Solution {
         const val WORD = "MAS"
 
         // Define the relative positions for the 'X' shape in four directions
-        val X_SHAPE_FORWARD_DOWN_RIGHT = listOf(
-            Pair(1, 0),   // down
-            Pair(0, 1)    // right
+        private val X_SHAPE_FORWARD_DOWN_RIGHT = listOf(
+            Pair(-1, -1),  // up-left
+            Pair(1, 1)     // down-right
         )
-        val X_SHAPE_BACKWARD_UP_LEFT = listOf(
-            Pair(-1, 0),  // up
-            Pair(0, -1)   // left
-        )
-        val X_SHAPE_FORWARD_DOWN_LEFT = listOf(
-            Pair(1, 0),   // down
-            Pair(0, -1)   // left
-        )
-        val X_SHAPE_BACKWARD_UP_RIGHT = listOf(
-            Pair(-1, 0),  // up
-            Pair(0, 1)    // right
+        private val X_SHAPE_BACKWARD_UP_RIGHT = listOf(
+            Pair(-1, 1),   // up-right
+            Pair(1, -1)    // down-left
         )
 
         val X_SHAPES = listOf(
             X_SHAPE_FORWARD_DOWN_RIGHT,
-            X_SHAPE_BACKWARD_UP_LEFT,
-            X_SHAPE_FORWARD_DOWN_LEFT,
             X_SHAPE_BACKWARD_UP_RIGHT
         )
     }
+
 
     private fun countMASOccurrences(input: List<String>): Int {
         var count = 0
@@ -68,16 +59,16 @@ class Day4Solution {
                 }
 
                 when (dx to dy) {
-                    Pair(1, 0) -> { // down
+                    Pair(-1, -1) -> { // up-left
                         if (input[newX][newY] != WORD[0]) isValid = false
                     }
-                    Pair(0, 1) -> { // right
+                    Pair(1, 1) -> { // down-right
                         if (input[newX][newY] != WORD[2]) isValid = false
                     }
-                    Pair(-1, 0) -> { // up
+                    Pair(-1, 1) -> { // up-right
                         if (input[newX][newY] != WORD[0]) isValid = false
                     }
-                    Pair(0, -1) -> { // left
+                    Pair(1, -1) -> { // down-left
                         if (input[newX][newY] != WORD[2]) isValid = false
                     }
                 }
