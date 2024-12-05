@@ -2,63 +2,110 @@ package org.example
 
 import java.io.File
 
-fun day4Solution() {
-    val file = File("src/main/resources/input4.txt")
-    if (!file.exists()) {
-        println("File not found!")
-        return
+class Day4Solution {
+
+    companion object {
+        const val WORD = "MAS"
+
+        // Define the relative positions for the 'X' shape in four directions
+        val X_SHAPE_FORWARD_DOWN_RIGHT = listOf(
+            Pair(1, 0),   // down
+            Pair(0, 1)    // right
+        )
+        val X_SHAPE_BACKWARD_UP_LEFT = listOf(
+            Pair(-1, 0),  // up
+            Pair(0, -1)   // left
+        )
+        val X_SHAPE_FORWARD_DOWN_LEFT = listOf(
+            Pair(1, 0),   // down
+            Pair(0, -1)   // left
+        )
+        val X_SHAPE_BACKWARD_UP_RIGHT = listOf(
+            Pair(-1, 0),  // up
+            Pair(0, 1)    // right
+        )
+
+        val X_SHAPES = listOf(
+            X_SHAPE_FORWARD_DOWN_RIGHT,
+            X_SHAPE_BACKWARD_UP_LEFT,
+            X_SHAPE_FORWARD_DOWN_LEFT,
+            X_SHAPE_BACKWARD_UP_RIGHT
+        )
     }
 
-    val inputLines = file.readLines()
-    val count = countXMASOccurrences(inputLines)
-    println("The word 'XMAS' appears $count times in the file.")
-}
+    private fun countMASOccurrences(input: List<String>): Int {
+        var count = 0
 
-const val WORD = "XMAS"
-
-// Define all possible directions: horizontal, vertical, diagonal, backwards
-val DIRECTIONS = listOf(
-    Pair(0, 1),   // right
-    Pair(1, 0),   // down
-    Pair(1, 1),   // down-right
-    Pair(-1, -1), // up-left
-    Pair(0, -1),  // left
-    Pair(-1, 0),  // up
-    Pair(-1, 1),  // up-right
-    Pair(1, -1)   // down-left
-)
-
-fun countXMASOccurrences(input: List<String>): Int {
-    var count = 0
-
-    for (i in input.indices) {
-        for (j in input[i].indices) {
-            for ((dx, dy) in DIRECTIONS) {
-                if (searchFromPosition(input, i, j, dx, dy)) {
+        for (i in input.indices) {
+            for (j in input[i].indices) {
+                if (searchFromPosition(input, i, j)) {
                     count++
                 }
             }
         }
+
+        return count
     }
 
-    return count
-}
-
-private fun searchFromPosition(input: List<String>, x: Int, y: Int, dx: Int, dy: Int): Boolean {
-    val wordLength = WORD.length
-    for (i in 0 until wordLength) {
-        val newX = x + i * dx
-        val newY = y + i * dy
-
-        // Check if we are out of bounds or the characters don't match
-        if (!isValidPosition(input, newX, newY) || input[newX][newY] != WORD[i]) {
+    private fun searchFromPosition(input: List<String>, x: Int, y: Int): Boolean {
+        // Check the middle character
+        if (!isValidPosition(input, x, y) || input[x][y] != WORD[1]) {
             return false
         }
+
+        // Check all four 'X' shapes around the center character
+        for (shape in X_SHAPES) {
+            var isValid = true
+
+            for ((dx, dy) in shape) {
+                val newX = x + dx
+                val newY = y + dy
+
+                // Check if we are out of bounds or the characters don't match
+                if (!isValidPosition(input, newX, newY)) {
+                    isValid = false
+                    break
+                }
+
+                when (dx to dy) {
+                    Pair(1, 0) -> { // down
+                        if (input[newX][newY] != WORD[0]) isValid = false
+                    }
+                    Pair(0, 1) -> { // right
+                        if (input[newX][newY] != WORD[2]) isValid = false
+                    }
+                    Pair(-1, 0) -> { // up
+                        if (input[newX][newY] != WORD[0]) isValid = false
+                    }
+                    Pair(0, -1) -> { // left
+                        if (input[newX][newY] != WORD[2]) isValid = false
+                    }
+                }
+
+                if (!isValid) break
+            }
+
+            if (isValid) {
+                return true
+            }
+        }
+
+        return false
     }
 
-    return true
-}
+    private fun isValidPosition(input: List<String>, x: Int, y: Int): Boolean {
+        return x in input.indices && y in input[x].indices
+    }
 
-private fun isValidPosition(input: List<String>, x: Int, y: Int): Boolean {
-    return x in input.indices && y in input[x].indices
+    fun run() {
+        val file = File("src/main/resources/input4.txt")
+        if (!file.exists()) {
+            println("File not found!")
+            return
+        }
+
+        val inputLines = file.readLines()
+        val count = countMASOccurrences(inputLines)
+        println("The 'X' shaped pattern for 'MAS' appears $count times in the file.")
+    }
 }
